@@ -17,6 +17,7 @@ import caffe
 import argparse
 import pprint
 import time, os, sys
+from IPython.core.debugger import Tracer
 
 def parse_args():
     """

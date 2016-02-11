@@ -16,6 +16,7 @@ import scipy.io as sio
 import utils.cython_bbox
 import cPickle
 import subprocess
+from IPython.core.debugger import Tracer
 
 class pascal_voc(datasets.imdb):
     def __init__(self, image_set, year, devkit_path=None):
