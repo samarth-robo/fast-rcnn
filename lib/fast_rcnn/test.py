@@ -80,10 +80,10 @@ def _get_rois_blob(im_rois, im_scale_factors, im_shape, expand_ratio=0.35):
     im_shapes = im_shape * im_scale_factors[levels]
     exp_rois = np.array([_clip_boxes(roi[np.newaxis, :], shape) for
       roi, shape in zip(exp_rois, im_shapes)]).squeeze()
-    # rois_blob = np.hstack((levels, rois))
-    # exp_rois_blob = np.hstack((levels, exp_rois))
-    rois_blob = np.hstack((rois, levels))
-    exp_rois_blob = np.hstack((exp_rois, levels))
+    rois_blob = np.hstack((levels, rois))
+    exp_rois_blob = np.hstack((levels, exp_rois))
+    # rois_blob = np.hstack((rois, levels))
+    # exp_rois_blob = np.hstack((exp_rois, levels))
     return rois_blob.astype(np.float32, copy=False), exp_rois_blob.astype(np.float32, copy=False)
 
 def _project_im_rois(im_rois, scales):
@@ -216,8 +216,8 @@ def im_detect(net, im, boxes):
         scores = net.blobs['cls_score'].data
     else:
         # use softmax estimated probabilities
-        # scores = blobs_out['cls_prob']
-        scores = blobs_out['prob_det']
+        scores = blobs_out['cls_prob']
+        #scores = blobs_out['prob_det']
 
     if cfg.TEST.BBOX_REG:
         # Apply bounding-box regression deltas
