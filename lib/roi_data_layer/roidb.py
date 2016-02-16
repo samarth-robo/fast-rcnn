@@ -10,6 +10,8 @@
 import numpy as np
 from fast_rcnn.config import cfg
 import utils.cython_bbox
+import cv2
+from IPython.core.debugger import Tracer
 
 def prepare_roidb(imdb):
     """Enrich the imdb's roidb by adding some derived quantities that
@@ -36,6 +38,37 @@ def prepare_roidb(imdb):
         # max overlap > 0 => class should not be zero (must be a fg class)
         nonzero_inds = np.where(max_overlaps > 0)[0]
         assert all(max_classes[nonzero_inds] != 0)
+
+    # add expanded bounding boxes for context
+    append_context_boxes(roidb, cfg.EXPAND_RATIO)
+    
+def append_context_boxes(roidb, expand_ratio):
+  for idx, r in enumerate(roidb):
+    rois = r['boxes'].astype(np.float)
+
+    # expand
+    w = (rois[:, 2] - rois[:, 0] + 1)[:, np.newaxis]
+    h = (rois[:, 3] - rois[:, 1] + 1)[:, np.newaxis]
+    delta = np.hstack((-w*expand_ratio, -h*expand_ratio, 
+      w*expand_ratio, h*expand_ratio)).astype(int)
+    exp_rois = rois + delta
+
+    # clip by image boundary
+    im = cv2.imread(r['image'])
+    if im is None:
+      print '@#@#@#@#@#@ image', r['image'], 'does not exist'
+    # x1 >= 0
+    exp_rois[:, 0::4] = np.maximum(exp_rois[:, 0::4], 0)
+    # y1 >= 0
+    exp_rois[:, 1::4] = np.maximum(exp_rois[:, 1::4], 0)
+    # x2 < im_shape[1]
+    exp_rois[:, 2::4] = np.minimum(exp_rois[:, 2::4], im.shape[1] - 1)
+    # y2 < im_shape[0]
+    exp_rois[:, 3::4] = np.minimum(exp_rois[:, 3::4], im.shape[0] - 1)
+    
+    r['exp_boxes'] = exp_rois
+
+  return roidb
 
 def add_bbox_regression_targets(roidb):
     """Add information needed to train bounding-box regressors."""

@@ -16,6 +16,7 @@ from roi_data_layer.minibatch import get_minibatch
 import numpy as np
 import yaml
 from multiprocessing import Process, Queue
+from IPython.core.debugger import Tracer
 
 class RoIDataLayer(caffe.Layer):
     """Fast R-CNN data layer used for training."""
@@ -77,6 +78,11 @@ class RoIDataLayer(caffe.Layer):
             'data': 0,
             'rois': 1,
             'labels': 2}
+        if cfg.CONTEXT:
+          if cfg.TRAIN.BBOX_REG:
+            self._name_to_top_map['exp_rois'] = 5
+          else:
+            self._name_to_top_map['exp_rois'] = 3
 
         # data blob: holds a batch of N images, each with 3 channels
         # The height and width (100 x 100) are dummy values
@@ -90,6 +96,12 @@ class RoIDataLayer(caffe.Layer):
         # labels blob: R categorical labels in [0, ..., K] for K foreground
         # classes plus background
         top[2].reshape(1)
+
+        if cfg.CONTEXT:
+          # exp_rois blob: holds R expanded regions of interest, each is a 5-tuple
+          # (n, x1, y1, x2, y2) specifying an image batch index n and a
+          # rectangle (x1, y1, x2, y2)
+          top[self._name_to_top_map['exp_rois']].reshape(1, 5)
 
         if cfg.TRAIN.BBOX_REG:
             self._name_to_top_map['bbox_targets'] = 3
