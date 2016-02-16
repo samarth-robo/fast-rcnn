@@ -82,8 +82,6 @@ def _get_rois_blob(im_rois, im_scale_factors, im_shape, expand_ratio=0.35):
       roi, shape in zip(exp_rois, im_shapes)]).squeeze()
     rois_blob = np.hstack((levels, rois))
     exp_rois_blob = np.hstack((levels, exp_rois))
-    # rois_blob = np.hstack((rois, levels))
-    # exp_rois_blob = np.hstack((exp_rois, levels))
     return rois_blob.astype(np.float32, copy=False), exp_rois_blob.astype(np.float32, copy=False)
 
 def _project_im_rois(im_rois, scales):
@@ -217,7 +215,6 @@ def im_detect(net, im, boxes):
     else:
         # use softmax estimated probabilities
         scores = blobs_out['cls_prob']
-        #scores = blobs_out['prob_det']
 
     if cfg.TEST.BBOX_REG:
         # Apply bounding-box regression deltas
@@ -347,6 +344,7 @@ def test_net(net, imdb):
             all_boxes[j][i] = all_boxes[j][i][inds, :]
 
     det_file = os.path.join(output_dir, 'detections.pkl')
+    print 'Saving all_boxes to', det_file
     with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 

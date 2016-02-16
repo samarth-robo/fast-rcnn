@@ -15,6 +15,8 @@ aps = [res(:).ap]';
 fprintf('%.1f\n', aps * 100);
 fprintf('%.1f\n', mean(aps) * 100);
 fprintf('~~~~~~~~~~~~~~~~~~~~\n');
+fprintf('Saving %s\n', [output_dir '/pr.mat']);
+save([output_dir '/pr.mat'], 'res');
 
 function res = voc_eval_cls(cls, VOCopts, comp_id, output_dir, rm_res)
 
@@ -50,6 +52,7 @@ res.recall = recall;
 res.prec = prec;
 res.ap = ap;
 res.ap_auc = ap_auc;
+res.cls = cls;
 
 save([output_dir '/' cls '_pr.mat'], ...
      'res', 'recall', 'prec', 'ap', 'ap_auc');
