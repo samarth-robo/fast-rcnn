@@ -135,7 +135,7 @@ __C.EXP_DIR = 'default'
 __C.EXPAND_RATIO = 0.4
 
 # Flag for using context
-__C.CONTEXT = 0
+__C.CONTEXT = 1
 
 def get_output_dir(imdb, net):
     """Return the directory where experimental artifacts are placed.

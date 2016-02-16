@@ -339,7 +339,7 @@ layer {
 }
 
 ################################## flatten fc 7
-layer {name: "fc7_flat" type: "Flatten" bottom: "fc7" top: "fc7_flat"}
+# layer {name: "fc7_flat" type: "Flatten" bottom: "fc7" top: "fc7_flat"}
 
 ################################## bbox pred
 layer {
@@ -604,30 +604,15 @@ layer {
   dropout_param {dropout_ratio: 0.5}
 }
 
-################################## seg pool
-layer {
-  name: "seg_pool"
-  type: "ROIPooling"
-  bottom: "fc7_seg"
-  bottom: "exp_rois"
-  top: "seg_pool"
-  roi_pooling_param {pooled_h: 10 pooled_w: 10 spatial_scale: 0.125}
-}
-
-layer {name: "seg_flatten" type: "Flatten" bottom: "seg_pool" top: "seg_flatten"}
-
-#################################
-# MIXING
-#################################
 ################################## seg project
 layer {
   name: "seg_project"
-  type: "InnerProduct"
-  bottom: "seg_flatten"
+  type: "Convolution"
+  bottom: "fc7_seg"
   top: "seg_project"
-  param {lr_mult: 10 decay_mult: 1 share_mode: PERMISSIVE}
-  param {lr_mult: 20 decay_mult: 0 share_mode: PERMISSIVE}
-  inner_product_param {num_output: 2048}
+  param {lr_mult: 10 decay_mult: 1}
+  param {lr_mult: 20 decay_mult: 0}
+  convolution_param {num_output: 40 kernel_size: 1}
 }
 
 layer {
@@ -645,12 +630,27 @@ layer {
   dropout_param {dropout_ratio: 0.5}
 }
 
+################################## seg pool
+layer {
+  name: "seg_pool"
+  type: "ROIPooling"
+  bottom: "seg_project"
+  bottom: "exp_rois"
+  top: "seg_pool"
+  roi_pooling_param {pooled_h: 10 pooled_w: 10 spatial_scale: 0.125}
+}
+
+layer {name: "seg_pool_flat" type: "Flatten" bottom: "seg_pool" top: "seg_pool_flat"}
+
+#################################
+# MIXING
+#################################
 ################################## concat
 layer {
   name: "concat"
   type: "Concat"
-  bottom: "fc7_flat"
-  bottom: "seg_project"
+  bottom: "fc7"
+  bottom: "seg_pool_flat"
   top: "concat"
   concat_param {axis: 1}
 }
@@ -660,7 +660,6 @@ layer {
   name: "mix"
   type: "InnerProduct"
   bottom: "concat"
-  # bottom: "seg_flatten"
   top: "mix"
   param {lr_mult: 10 decay_mult: 1 share_mode: PERMISSIVE}
   param {lr_mult: 20 decay_mult: 0 share_mode: PERMISSIVE}
