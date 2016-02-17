@@ -338,9 +338,6 @@ layer {
   dropout_param {dropout_ratio: 0.5}
 }
 
-################################## flatten fc 7
-# layer {name: "fc7_flat" type: "Flatten" bottom: "fc7" top: "fc7_flat"}
-
 ################################## bbox pred
 layer {
   name: "bbox_pred"
