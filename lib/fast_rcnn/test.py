@@ -54,7 +54,15 @@ def _get_image_blob(im):
 
     return blob, np.array(im_scale_factors)
 
-def _get_rois_blob(im_rois, im_scale_factors):
+def _expand_rois(rois, expand_ratio=0.35):
+    w = (rois[:, 2] - rois[:, 0] + 1)[:, np.newaxis]
+    h = (rois[:, 3] - rois[:, 1] + 1)[:, np.newaxis]
+    delta = np.hstack((-w*expand_ratio, -h*expand_ratio,
+      w*expand_ratio, h*expand_ratio)).astype(int)
+    exp_rois = rois + delta
+    return exp_rois
+
+def _get_rois_blob(im_rois, im_scale_factors, im_shape, expand_ratio=0.10):
     """Converts RoIs into network inputs.
 
     Arguments:
@@ -65,8 +73,13 @@ def _get_rois_blob(im_rois, im_scale_factors):
         blob (ndarray): R x 5 matrix of RoIs in the image pyramid
     """
     rois, levels = _project_im_rois(im_rois, im_scale_factors)
+    exp_rois = _expand_rois(rois, expand_ratio)
+    im_shapes = im_shape * im_scale_factors[levels]
+    exp_rois = np.array([_clip_boxes(roi[np.newaxis, :], shape) for
+      roi, shape in zip(exp_rois, im_shapes)]).squeeze()
     rois_blob = np.hstack((levels, rois))
-    return rois_blob.astype(np.float32, copy=False)
+    exp_rois_blobs = np.hstack((levels, exp_rois))
+    return rois_blob.astype(np.float32, copy=False), exp_rois_blob.astype(np.float32, copy=False)
 
 def _project_im_rois(im_rois, scales):
     """Project image RoIs into the image pyramid built by _get_image_blob.
@@ -96,11 +109,12 @@ def _project_im_rois(im_rois, scales):
 
     return rois, levels
 
-def _get_blobs(im, rois):
+def _get_blobs(im, rois, expand_ratio=0.10):
     """Convert an image and RoIs within that image into network inputs."""
-    blobs = {'data' : None, 'rois' : None}
+    blobs = {'data' : None, 'rois' : None, 'exp_rois': None}
     blobs['data'], im_scale_factors = _get_image_blob(im)
-    blobs['rois'] = _get_rois_blob(rois, im_scale_factors)
+    blobs['rois'], blobs['exp_rois'] = _get_rois_blob(rois, im_scale_factors,
+        im.shape, expand_ratio)
     return blobs, im_scale_factors
 
 def _bbox_pred(boxes, box_deltas):
@@ -163,7 +177,7 @@ def im_detect(net, im, boxes):
             background as object category 0)
         boxes (ndarray): R x (4*K) array of predicted bounding boxes
     """
-    blobs, unused_im_scale_factors = _get_blobs(im, boxes)
+    blobs, unused_im_scale_factors = _get_blobs(im, boxes, cfg.EXPAND_RATIO)
 
     # When mapping from image ROIs to feature map ROIs, there's some aliasing
     # (some distinct image ROIs get mapped to the same feature ROI).
@@ -175,13 +189,22 @@ def im_detect(net, im, boxes):
         _, index, inv_index = np.unique(hashes, return_index=True,
                                         return_inverse=True)
         blobs['rois'] = blobs['rois'][index, :]
+        if cfg.CONTEXT:
+          blobs['exp_rois'] = blobs['exp_rois'][index, :]
         boxes = boxes[index, :]
 
     # reshape network inputs
     net.blobs['data'].reshape(*(blobs['data'].shape))
     net.blobs['rois'].reshape(*(blobs['rois'].shape))
-    blobs_out = net.forward(data=blobs['data'].astype(np.float32, copy=False),
-                            rois=blobs['rois'].astype(np.float32, copy=False))
+    if cfg.CONTEXT:
+      net.blobs['exp_rois'].reshape(*(blobs['exp_rois'].shape))
+      blobs_out = net.forward(data=blobs['data'].astype(np.float32, copy=False),
+                              rois=blobs['rois'].astype(np.float32, copy=False),
+                              exp_rois=blobs['exp_rois'].astype(np.float32, copy=False))
+    else:
+      blobs_out = net.forward(data=blobs['data'].astype(np.float32, copy=False),
+                              rois=blobs['rois'].astype(np.float32, copy=False))
+
     if cfg.TEST.SVM:
         # use the raw scores before softmax under the assumption they
         # were trained as linear SVMs

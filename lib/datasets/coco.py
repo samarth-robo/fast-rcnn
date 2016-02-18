@@ -15,6 +15,7 @@ import scipy.io as sio
 import cPickle
 import subprocess
 import json
+from IPython.core.debugger import Tracer
 
 # Import the COCO API
 _API_PATH = osp.join(datasets.ROOT_DIR, 'data', 'cocoAPI')
@@ -181,6 +182,7 @@ class coco(datasets.imdb):
             roidb = self._filter_crowd_proposals(roidb)
         else:
             roidb = self._load_proposals(method, None)
+
         with open(cache_file, 'wb') as fid:
             cPickle.dump(roidb, fid, cPickle.HIGHEST_PROTOCOL)
         print 'wrote {:s} roidb to {:s}'.format(method, cache_file)
