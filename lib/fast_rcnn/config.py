@@ -132,7 +132,7 @@ __C.ROOT_DIR = osp.abspath(osp.join(osp.dirname(__file__), '..', '..'))
 __C.EXP_DIR = 'default'
 
 # The factor by which bounding boxes are expanded to get context
-__C.EXPAND_RATIO = 0.4
+__C.EXPAND_RATIO = 0.05
 
 # Flag for using context
 __C.CONTEXT = 1

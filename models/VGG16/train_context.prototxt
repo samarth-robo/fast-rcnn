@@ -1,4 +1,5 @@
 name: "VGG_ILSVRC_16_layers_context"
+
 layer {
   name: 'data'
   type: 'Python'
@@ -360,7 +361,11 @@ layer {
   top: "conv3_1_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  convolution_param {num_output: 256 pad: 1 kernel_size: 3}
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -377,7 +382,11 @@ layer {
   top: "conv3_2_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  convolution_param {num_output: 256 pad: 1 kernel_size: 3}
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -394,7 +403,11 @@ layer {
   top: "conv3_3_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  convolution_param {num_output: 256 pad: 1 kernel_size: 3}
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -409,7 +422,12 @@ layer {
   type: "Pooling"
   bottom: "conv3_3_seg"
   top: "pool3_seg"
-  pooling_param {pool: MAX kernel_size: 3 stride: 2 pad: 1}
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+    pad: 1
+  }
 }
 
 ################################## conv-4
@@ -420,7 +438,11 @@ layer {
   top: "conv4_1_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  convolution_param {num_output: 512 pad: 1 kernel_size: 3}
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -437,7 +459,11 @@ layer {
   top: "conv4_2_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  convolution_param {num_output: 512 pad: 1 kernel_size: 3}
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -454,7 +480,11 @@ layer {
   top: "conv4_3_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  convolution_param {num_output: 512 pad: 1 kernel_size: 3}
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -469,21 +499,28 @@ layer {
   type: "Pooling"
   bottom: "conv4_3_seg"
   top: "pool4_seg"
-  # pooling_param {pool: MAX kernel_size: 3 stride: 2 pad: 1}
-  pooling_param {pool: MAX kernel_size: 3 stride: 1 pad: 1}
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    # stride: 2
+    stride: 1
+    pad: 1
+  }
 }
 
 ################################## conv-5
 layer {
   name: "conv5_1_seg"
-  type: "ConvolutionHole"
+  type: "Convolution"
   bottom: "pool4_seg"
   top: "conv5_1_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  # convolution_param {num_output: 512 pad: 1 kernel_size: 3}
-  convolution_param {num_output: 512 pad: 2 kernel_size: 3}
-  convolution_hole_param {hole: 2}
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -495,14 +532,16 @@ layer {
 
 layer {
   name: "conv5_2_seg"
-  type: "ConvolutionHole"
+  type: "Convolution"
   bottom: "conv5_1_seg"
   top: "conv5_2_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  # convolution_param {num_output: 512 pad: 1 kernel_size: 3}
-  convolution_param {num_output: 512 pad: 2 kernel_size: 3}
-  convolution_hole_param {hole: 2}
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -514,14 +553,16 @@ layer {
 
 layer {
   name: "conv5_3_seg"
-  type: "ConvolutionHole"
+  type: "Convolution"
   bottom: "conv5_2_seg"
   top: "conv5_3_seg"
   param {lr_mult: 0 decay_mult: 0}
   param {lr_mult: 0 decay_mult: 0}
-  # convolution_param {num_output: 512 pad: 1 kernel_size: 3}
-  convolution_param {num_output: 512 pad: 2 kernel_size: 3}
-  convolution_hole_param {hole: 2}
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -536,8 +577,14 @@ layer {
   type: "Pooling"
   bottom: "conv5_3_seg"
   top: "pool5_seg"
-  # pooling_param {pool: MAX kernel_size: 2 stride: 2 pad: 1}
-  pooling_param {pool: MAX kernel_size: 3 stride: 1 pad: 1}
+  pooling_param {
+    pool: MAX
+    #kernel_size: 2
+    #stride: 2
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
 }
 
 layer {
@@ -545,19 +592,27 @@ layer {
   type: "Pooling"
   bottom: "pool5_seg"
   top: "pool5a_seg"
-  pooling_param {pool: AVE kernel_size: 3 stride: 1 pad: 1}
+  pooling_param {
+    pool: AVE
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
 }
 
 ################################## fc-6 SEG
 layer {
   name: "fc6_seg"
-  type: "ConvolutionHole"
+  type: "Convolution"
   bottom: "pool5a_seg"
   top: "fc6_seg"
-  param {lr_mult: 0 decay_mult: 0 share_mode: PERMISSIVE}
-  param {lr_mult: 0 decay_mult: 0 share_mode: PERMISSIVE}
-  convolution_param {num_output: 1024 pad: 12 kernel_size: 3}
-  convolution_hole_param {hole: 12}
+  param {lr_mult: 0 decay_mult: 0}
+  param {lr_mult: 0 decay_mult: 0}
+  convolution_param {
+    num_output: 1024
+    pad: 1
+    kernel_size: 3
+  }
 }
 
 layer {
@@ -572,18 +627,23 @@ layer {
   type: "Dropout"
   bottom: "fc6_seg"
   top: "fc6_seg"
-  dropout_param {dropout_ratio: 0.5}
+  dropout_param {
+    dropout_ratio: 0.5
+  }
 }
 
-################################## fc-7
+################################## fc-7 SEG
 layer {
   name: "fc7_seg"
   type: "Convolution"
   bottom: "fc6_seg"
   top: "fc7_seg"
-  param {lr_mult: 0 decay_mult: 0 share_mode: PERMISSIVE}
-  param {lr_mult: 0 decay_mult: 0 share_mode: PERMISSIVE}
-  convolution_param {num_output: 512 kernel_size: 1}
+  param {lr_mult: 0 decay_mult: 0}
+  param {lr_mult: 0 decay_mult: 0}
+  convolution_param {
+    num_output: 512
+    kernel_size: 1
+  }
 }
 
 layer {
@@ -598,7 +658,9 @@ layer {
   type: "Dropout"
   bottom: "fc7_seg"
   top: "fc7_seg"
-  dropout_param {dropout_ratio: 0.5}
+  dropout_param {
+    dropout_ratio: 0.5
+  }
 }
 
 ################################## seg project
@@ -609,7 +671,7 @@ layer {
   top: "seg_project"
   param {lr_mult: 10 decay_mult: 1}
   param {lr_mult: 20 decay_mult: 0}
-  convolution_param {num_output: 40 kernel_size: 1}
+  convolution_param {num_output: 50 kernel_size: 1}
 }
 
 layer {
@@ -658,8 +720,8 @@ layer {
   type: "InnerProduct"
   bottom: "concat"
   top: "mix"
-  param {lr_mult: 10 decay_mult: 1 share_mode: PERMISSIVE}
-  param {lr_mult: 20 decay_mult: 0 share_mode: PERMISSIVE}
+  param {lr_mult: 10 decay_mult: 1}
+  param {lr_mult: 20 decay_mult: 0}
   inner_product_param {num_output: 21}
 }
 
