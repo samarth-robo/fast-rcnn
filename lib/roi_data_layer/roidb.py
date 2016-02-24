@@ -11,6 +11,7 @@ import numpy as np
 from fast_rcnn.config import cfg
 import utils.cython_bbox
 import cv2
+from IPython.core.debugger import Tracer
 
 def prepare_roidb(imdb):
     """Enrich the imdb's roidb by adding some derived quantities that
@@ -21,6 +22,8 @@ def prepare_roidb(imdb):
     """
     roidb = imdb.roidb
     for i in xrange(len(imdb.image_index)):
+        if i % 10000 == 0:
+          print "%d / %d" % (i, len(imdb.image_index))
         roidb[i]['image'] = imdb.image_path_at(i)
         # need gt_overlaps as a dense array for argmax
         gt_overlaps = roidb[i]['gt_overlaps'].toarray()
@@ -37,11 +40,16 @@ def prepare_roidb(imdb):
         # max overlap > 0 => class should not be zero (must be a fg class)
         nonzero_inds = np.where(max_overlaps > 0)[0]
         assert all(max_classes[nonzero_inds] != 0)
-        # append expanded bounding boxes for context
-        append_context_boxes(roidb, cfg.EXPAND_RATIO)
+
+    # append expanded bounding boxes for context
+    print 'Appending context boxes'
+    append_context_boxes(roidb, cfg.EXPAND_RATIO)
 
 def append_context_boxes(roidb, expand_ratio):
     for idx, r in enumerate(roidb):
+        if idx % 10000 == 0:
+          print "%d / %d" % (idx, len(roidb))
+
         rois = r['boxes'].astype(np.float)
 
         # expand
