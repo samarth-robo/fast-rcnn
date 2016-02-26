@@ -72,7 +72,7 @@ __C.TRAIN.SNAPSHOT_ITERS = 10000
 
 # solver.prototxt specifies the snapshot path prefix, this adds an optional
 # infix to yield the path: <prefix>[_<infix>]_iters_XYZ.caffemodel
-__C.TRAIN.SNAPSHOT_INFIX = '_frcnn'
+__C.TRAIN.SNAPSHOT_INFIX = 'frcnn_mcg'
 
 # Use a prefetch thread in roi_data_layer.layer
 # So far I haven't found this useful; likely more engineering work is required
@@ -80,7 +80,7 @@ __C.TRAIN.USE_PREFETCH = False
 
 # Train using these proposals
 # __C.TRAIN.PROPOSAL_METHOD = 'selective_search'
-__C.TRAIN.PROPOSAL_METHOD = 'MCG'
+__C.TRAIN.PROPOSAL_METHOD = 'mcg'
 
 #
 # Testing options
@@ -108,7 +108,7 @@ __C.TEST.BBOX_REG = True
 
 # Test using these proposals
 # __C.TEST.PROPOSAL_METHOD = 'selective_search'
-__C.TEST.PROPOSAL_METHOD = 'MCG'
+__C.TEST.PROPOSAL_METHOD = 'mcg'
 
 #
 # MISC

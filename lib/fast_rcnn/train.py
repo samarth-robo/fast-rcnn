@@ -16,6 +16,7 @@ import os
 
 from caffe.proto import caffe_pb2
 import google.protobuf as pb2
+from IPython.core.debugger import Tracer
 
 class SolverWrapper(object):
     """A simple wrapper around Caffe's solver.
@@ -24,7 +25,7 @@ class SolverWrapper(object):
     """
 
     def __init__(self, solver_prototxt, roidb, output_dir,
-                 pretrained_model=None):
+                 pretrained_model=None, previous_state=None):
         """Initialize the SolverWrapper."""
         self.output_dir = output_dir
 
@@ -38,6 +39,9 @@ class SolverWrapper(object):
             print ('Loading pretrained model '
                    'weights from {:s}').format(pretrained_model)
             self.solver.net.copy_from(pretrained_model)
+        elif previous_state is not None:
+            print ('Restoring state from {:s}').format(previous_state)
+            self.solver.restore(previous_state)
 
         self.solver_param = caffe_pb2.SolverParameter()
         with open(solver_prototxt, 'rt') as f:
@@ -138,11 +142,11 @@ def filter_roidb(roidb):
     return filtered_roidb
 
 def train_net(solver_prototxt, roidb, output_dir,
-              pretrained_model=None, max_iters=40000):
+              pretrained_model=None, max_iters=40000, previous_state=None):
     """Train a Fast R-CNN network."""
     roidb = filter_roidb(roidb)
     sw = SolverWrapper(solver_prototxt, roidb, output_dir,
-                       pretrained_model=pretrained_model)
+                       pretrained_model=pretrained_model, previous_state=previous_state)
 
     print 'Solving...'
     sw.train_model(max_iters)
