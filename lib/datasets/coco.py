@@ -79,7 +79,7 @@ class coco(datasets.imdb):
         # Some image sets are just views into others.
         # For example, minival2014 is a random 5000 image subset of val2014.
         # This mapping tells us where the view's images and proposals come from.
-        self._view_map = {'minival2014' : 'val2014'}
+        self._view_map = {'minival2014': 'val2014', 'test-dev2015': 'test2015'}
         coco_name = image_set + year  # e.g., "val2014"
         self._data_name = (self._view_map[coco_name]
                            if self._view_map.has_key(coco_name)
@@ -212,6 +212,12 @@ class coco(datasets.imdb):
             boxes = (raw_data[:top_k, :] - 1).astype(np.uint16)
             keep, inv_keep = _unique_boxes(boxes)
             boxes = boxes[keep, :]
+            
+            # we only have MCG boxes of format [top, left, bottom, right] for test2015
+            if self._data_name == 'test2015':
+              boxes = boxes[:, [1, 0, 3, 2]]
+              print '#### Swapping X and Y for test2015 MCG proposals ####'
+
             box_list.append(boxes)
 
             im_ann = self._COCO.loadImgs(index)[0]

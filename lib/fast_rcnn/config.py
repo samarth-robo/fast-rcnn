@@ -79,7 +79,8 @@ __C.TRAIN.SNAPSHOT_INFIX = ''
 __C.TRAIN.USE_PREFETCH = False
 
 # Train using these proposals
-__C.TRAIN.PROPOSAL_METHOD = 'selective_search'
+# __C.TRAIN.PROPOSAL_METHOD = 'selective_search'
+__C.TRAIN.PROPOSAL_METHOD = 'mcg'
 
 #
 # Testing options
@@ -106,7 +107,8 @@ __C.TEST.SVM = False
 __C.TEST.BBOX_REG = True
 
 # Test using these proposals
-__C.TEST.PROPOSAL_METHOD = 'selective_search'
+# __C.TEST.PROPOSAL_METHOD = 'selective_search'
+__C.TEST.PROPOSAL_METHOD = 'mcg'
 
 #
 # MISC
