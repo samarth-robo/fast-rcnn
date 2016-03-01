@@ -80,14 +80,14 @@ class coco(datasets.imdb):
         # Some image sets are just views into others.
         # For example, minival2014 is a random 5000 image subset of val2014.
         # This mapping tells us where the view's images and proposals come from.
-        self._view_map = {'minival2014': 'val2014', 'test-dev2015': 'test2015'}
+        self._view_map = {'minival2014': 'val2014', 'test-dev2015': 'test2015', 'minitrain2014': 'train2014'}
         coco_name = image_set + year  # e.g., "val2014"
         self._data_name = (self._view_map[coco_name]
                            if self._view_map.has_key(coco_name)
                            else coco_name)
         # Dataset splits that have ground-truth annotations (test splits
         # do not have gt annotations)
-        self._gt_splits = ('train', 'val', 'minival')
+        self._gt_splits = ('train', 'val', 'minival', 'minitrain')
 
     def _get_ann_file(self):
         prefix = 'instances' if self._image_set.find('test') == -1 \

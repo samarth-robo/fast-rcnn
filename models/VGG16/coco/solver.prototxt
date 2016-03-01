@@ -9,7 +9,7 @@ momentum: 0.9
 weight_decay: 0.0005
 # We disable standard caffe solver snapshotting and implement our own snapshot
 # function
-snapshot: 20000
+snapshot: 4000
 # We still use the snapshot prefix, though
-snapshot_prefix: "snapshots/coco_vgg16_mcg/"
+snapshot_prefix: ""
 #debug_info: true

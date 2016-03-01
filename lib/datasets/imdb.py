@@ -12,6 +12,7 @@ from utils.cython_bbox import bbox_overlaps
 import numpy as np
 import scipy.sparse
 import datasets
+from IPython.core.debugger import Tracer
 
 class imdb(object):
     """Image database."""

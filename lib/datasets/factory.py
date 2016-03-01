@@ -38,7 +38,7 @@ for top_k in np.arange(1000, 11000, 1000):
                     _selective_search_IJCV_top_k(split, year, top_k))
 
 for year in ['2014']:
-    for split in ['train', 'val', 'minival']:
+    for split in ['train', 'val', 'minival', 'minitrain']:
         name = 'coco_{}_{}'.format(year, split)
         __sets[name] = (lambda split=split, year=year:
                 datasets.coco(split, year))
