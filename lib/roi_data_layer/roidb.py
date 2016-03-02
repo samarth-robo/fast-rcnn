@@ -42,8 +42,9 @@ def prepare_roidb(imdb):
         assert all(max_classes[nonzero_inds] != 0)
 
     # append expanded bounding boxes for context
-    print 'Appending context boxes'
-    append_context_boxes(roidb, cfg.EXPAND_RATIO)
+    if cfg.CONTEXT:
+        print 'Appending context boxes'
+        append_context_boxes(roidb, cfg.EXPAND_RATIO)
 
 def append_context_boxes(roidb, expand_ratio):
     for idx, r in enumerate(roidb):

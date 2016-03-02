@@ -47,11 +47,12 @@ def get_minibatch(roidb, num_classes):
         rois_blob_this_image = np.hstack((batch_ind, rois))
         rois_blob = np.vstack((rois_blob, rois_blob_this_image))
 
-        # Add to expanded RoIs blob
-        exp_rois = _project_im_rois(exp_im_rois, im_scales[im_i])
-        batch_ind = im_i * np.ones((exp_rois.shape[0], 1))
-        exp_rois_blob_this_image = np.hstack((batch_ind, exp_rois))
-        exp_rois_blob = np.vstack((exp_rois_blob, exp_rois_blob_this_image))
+        if cfg.CONTEXT:
+          # Add to expanded RoIs blob
+          exp_rois = _project_im_rois(exp_im_rois, im_scales[im_i])
+          batch_ind = im_i * np.ones((exp_rois.shape[0], 1))
+          exp_rois_blob_this_image = np.hstack((batch_ind, exp_rois))
+          exp_rois_blob = np.vstack((exp_rois_blob, exp_rois_blob_this_image))
 
         # Add to labels, bbox targets, and bbox loss blobs
         labels_blob = np.hstack((labels_blob, labels))
@@ -87,7 +88,10 @@ def _sample_rois(roidb, fg_rois_per_image, rois_per_image, num_classes):
     labels = roidb['max_classes']
     overlaps = roidb['max_overlaps']
     rois = roidb['boxes']
-    exp_rois = roidb['exp_boxes']
+    if cfg.CONTEXT:
+      exp_rois = roidb['exp_boxes']
+    else:
+      exp_rois = None
 
     # Select foreground RoIs as those with >= FG_THRESH overlap
     fg_inds = np.where(overlaps >= cfg.TRAIN.FG_THRESH)[0]
@@ -120,7 +124,8 @@ def _sample_rois(roidb, fg_rois_per_image, rois_per_image, num_classes):
     labels[fg_rois_per_this_image:] = 0
     overlaps = overlaps[keep_inds]
     rois = rois[keep_inds]
-    exp_rois = exp_rois[keep_inds]
+    if cfg.CONTEXT:
+      exp_rois = exp_rois[keep_inds]
 
     bbox_targets, bbox_loss_weights = \
             _get_bbox_regression_labels(roidb['bbox_targets'][keep_inds, :],
