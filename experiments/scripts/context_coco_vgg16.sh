@@ -5,7 +5,7 @@ set -e
 
 export PYTHONUNBUFFERED="True"
 
-LOG="experiments/logs/coco_context_vgg16.txt"
+LOG="experiments/logs/coco_context_2.0_vgg16.txt"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
@@ -19,7 +19,7 @@ time ./tools/train_net.py --gpu $1 \
 
 time ./tools/test_net.py --gpu $1 \
   --def models/VGG16/coco/test_context.prototxt \
-  --net output/coco_baseline/coco_2014_minitrain/_context_vgg16_iter_48000.caffemodel \
+  --net output/coco_baseline/coco_2014_minitrain/context_2.0_vgg16_iter_48000.caffemodel \
   --cfg experiments/cfgs/coco.yml \
   --imdb coco_2014_minival \
   --num_dets 100 --comp

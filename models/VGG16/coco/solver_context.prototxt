@@ -11,5 +11,5 @@ weight_decay: 0.0005
 # function
 snapshot: 0
 # We still use the snapshot prefix, though
-snapshot_prefix: "context"
+snapshot_prefix: "context_2.0"
 #debug_info: true

@@ -834,7 +834,7 @@ layer {
   bottom: "seg_project"
   bottom: "exp_rois"
   top: "seg_pool"
-  roi_pooling_param {pooled_h: 3 pooled_w: 3 spatial_scale: 0.125}
+  roi_pooling_param {pooled_h: 4 pooled_w: 4 spatial_scale: 0.125}
 }
 
 layer {name: "seg_pool_flat" type: "Flatten" bottom: "seg_pool" top: "seg_pool_flat"}

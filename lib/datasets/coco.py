@@ -74,7 +74,7 @@ class coco(datasets.imdb):
                                               self._COCO.getCatIds()))
         self._image_index = self._load_image_set_index()
         # Default to roidb handler
-        self.set_proposal_method('selective_search')
+        self.set_proposal_method('selective_search', 0.0)
         self.competition_mode(False)
 
         # Some image sets are just views into others.
@@ -149,22 +149,22 @@ class coco(datasets.imdb):
             roidb[ix]['gt_overlaps'] = scipy.sparse.csr_matrix(overlaps)
         return roidb
 
-    def selective_search_roidb(self):
-        return self._proposal_roidb('selective_search')
+    def selective_search_roidb(self, expand_ratio):
+        return self._proposal_roidb('selective_search', expand_ratio)
 
-    def edge_boxes_roidb(self):
-        return self._proposal_roidb('edge_boxes_AR')
+    def edge_boxes_roidb(self, expand_ratio):
+        return self._proposal_roidb('edge_boxes_AR', expand_ratio)
 
-    def mcg_roidb(self):
-        return self._proposal_roidb('MCG')
+    def mcg_roidb(self, expand_ratio):
+        return self._proposal_roidb('MCG', expand_ratio)
 
-    def _proposal_roidb(self, method):
+    def _proposal_roidb(self, method, expand_ratio):
         """
         Creates a roidb from pre-computed proposals of a particular methods.
         """
         top_k = self.config['top_k']
         cache_file = osp.join(self.cache_path, self.name +
-                              '_{:s}_top{:d}'.format(method, top_k) +
+            '_{:s}_top{:d}_{:2.1f}'.format(method, top_k, expand_ratio) +
                               '_roidb.pkl')
 
         if osp.exists(cache_file):
