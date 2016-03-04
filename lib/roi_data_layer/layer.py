@@ -16,6 +16,7 @@ from roi_data_layer.minibatch import get_minibatch
 import numpy as np
 import yaml
 from multiprocessing import Process, Queue
+from IPython.core.debugger import Tracer
 
 class RoIDataLayer(caffe.Layer):
     """Fast R-CNN data layer used for training."""
