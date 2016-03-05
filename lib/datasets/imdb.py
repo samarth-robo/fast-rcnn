@@ -61,7 +61,7 @@ class imdb(object):
         #   flipped
         if self._roidb is not None:
             return self._roidb
-        self._roidb = self.roidb_handler(self.expand_ratio)
+        self._roidb = self.roidb_handler()
         return self._roidb
 
     @property
@@ -81,10 +81,9 @@ class imdb(object):
     def default_roidb(self):
         raise NotImplementedError
 
-    def set_proposal_method(self, method, expand_ratio):
+    def set_proposal_method(self, method):
         method = eval('self.' + method + '_roidb')
         self.roidb_handler = method
-        self.expand_ratio = expand_ratio
 
     def evaluate_detections(self, all_boxes, output_dir=None):
         """
