@@ -137,7 +137,7 @@ __C.ROOT_DIR = osp.abspath(osp.join(osp.dirname(__file__), '..', '..'))
 # Place outputs under an experiments directory
 __C.EXP_DIR = 'default'
 
-__C.EXPAND_RATIO = 0.5
+__C.EXPAND_RATIO = 0.25
 __C.CONTEXT = 1
 
 def get_output_dir(imdb, net):

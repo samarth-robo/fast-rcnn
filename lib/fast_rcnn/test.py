@@ -17,6 +17,7 @@ from utils.cython_nms import nms
 import cPickle
 from utils.blob import im_list_to_blob
 import os
+from IPython.core.debugger import Tracer
 
 def _get_image_blob(im):
     """Converts an image into a network input.
@@ -212,6 +213,7 @@ def im_detect(net, im, boxes):
     else:
         # use softmax estimated probabilities
         scores = blobs_out['cls_prob']
+    Tracer()()
 
     if cfg.TEST.BBOX_REG:
         # Apply bounding-box regression deltas

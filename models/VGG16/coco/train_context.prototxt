@@ -803,7 +803,18 @@ layer {
   top: "seg_project"
   param {lr_mult: 1 decay_mult: 1}
   param {lr_mult: 2 decay_mult: 0}
-  convolution_param {num_output: 60 kernel_size: 1}
+  convolution_param {
+    num_output: 60
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
 }
 
 layer {
@@ -828,7 +839,7 @@ layer {
   bottom: "seg_project"
   bottom: "exp_rois"
   top: "seg_pool"
-  roi_pooling_param {pooled_h: 4 pooled_w: 4 spatial_scale: 0.125}
+  roi_pooling_param {pooled_h: 3 pooled_w: 3 spatial_scale: 0.125}
 }
 
 layer {name: "seg_pool_flat" type: "Flatten" bottom: "seg_pool" top: "seg_pool_flat"}
@@ -854,7 +865,17 @@ layer {
   top: "mix"
   param {lr_mult: 1 decay_mult: 1}
   param {lr_mult: 2 decay_mult: 0}
-  inner_product_param {num_output: 81}
+  inner_product_param {
+    num_output: 81
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
 }
 
 layer {
