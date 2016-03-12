@@ -44,7 +44,7 @@ __C.TRAIN.MAX_SIZE = 1000
 __C.TRAIN.IMS_PER_BATCH = 1
 
 # Minibatch size (number of regions of interest [ROIs])
-__C.TRAIN.BATCH_SIZE = 128
+__C.TRAIN.BATCH_SIZE = 64
 
 # Fraction of minibatch that is labeled foreground (i.e. class > 0)
 __C.TRAIN.FG_FRACTION = 0.25
@@ -137,7 +137,7 @@ __C.ROOT_DIR = osp.abspath(osp.join(osp.dirname(__file__), '..', '..'))
 # Place outputs under an experiments directory
 __C.EXP_DIR = 'default'
 
-__C.EXPAND_RATIO = 0.25
+__C.EXPAND_RATIO = 1.0
 __C.CONTEXT = 1
 
 def get_output_dir(imdb, net):

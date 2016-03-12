@@ -213,7 +213,6 @@ def im_detect(net, im, boxes):
     else:
         # use softmax estimated probabilities
         scores = blobs_out['cls_prob']
-    Tracer()()
 
     if cfg.TEST.BBOX_REG:
         # Apply bounding-box regression deltas

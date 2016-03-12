@@ -14,12 +14,12 @@ echo Logging output to "$LOG"
 #   --solver models/VGG16/coco/solver.prototxt \
 #   --weights data/imagenet_models/VGG16.v2.caffemodel \
 #   --cfg experiments/cfgs/coco.yml \
-#   --imdb coco_2014_minitrain \
-#   --iters 48000
+#   --imdb coco_2014_train \
+#   --iters 480000
 
 time ./tools/test_net.py --gpu $1 \
   --def models/VGG16/coco/test.prototxt \
-  --net output/coco_baseline/coco_2014_minitrain/baseline__vgg16_iter_48000.caffemodel \
+  --net output/coco_baseline/coco_2014_train/baseline_vgg16_iter_480000.caffemodel \
   --cfg experiments/cfgs/coco.yml \
-  --imdb coco_2014_minival \
+  --imdb coco_2014_val \
   --num_dets 100 --comp
