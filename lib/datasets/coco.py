@@ -213,8 +213,8 @@ class coco(datasets.imdb):
             raw_data = sio.loadmat(box_file)['boxes']
             boxes = (raw_data[:top_k, :] - 1).astype(np.uint16)
             # MCG boxes for 2015 test have format [up, left, down, right]
-            if self._data_name == 'test2015':
-                print '##### Flipping X and Y co-ordinates #####'
+            if self._data_name == 'test2015' or self._data_name == 'val2014':
+              # print '##### Flipping X and Y co-ordinates #####'
                 boxes = boxes[:, [1, 0, 3, 2]]
             keep, inv_keep = _unique_boxes(boxes)
             boxes = boxes[keep, :]
@@ -298,7 +298,7 @@ class coco(datasets.imdb):
         # COCO_val2014_0/COCO_val2014_000000447/COCO_val2014_000000447991.mat
         file_name = ('COCO_' + self._data_name +
                      '_' + str(index).zfill(12) + '.mat')
-        if self._data_name == 'test2015':
+        if self._data_name == 'test2015' or self._data_name == 'val2014':
           # for the MCG proposals downloaded from MCG website
           box_file = osp.join(file_name[:14], file_name)
         else:
