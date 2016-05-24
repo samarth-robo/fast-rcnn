@@ -24,7 +24,7 @@ class SolverWrapper(object):
     """
 
     def __init__(self, solver_prototxt, roidb, output_dir,
-                 pretrained_model=None):
+                 pretrained_model=None, ctx_db_path=None):
         """Initialize the SolverWrapper."""
         self.output_dir = output_dir
 
@@ -44,6 +44,9 @@ class SolverWrapper(object):
             pb2.text_format.Merge(f.read(), self.solver_param)
 
         self.solver.net.layers[0].set_roidb(roidb)
+
+        if cfg.CONTEXT:
+          self.solver.net.layers[0].set_ctx_db(ctx_db_path)
 
     def snapshot(self):
         """Take a snapshot of the network after unnormalizing the learned
@@ -118,10 +121,12 @@ def get_training_roidb(imdb):
     return imdb.roidb
 
 def train_net(solver_prototxt, roidb, output_dir,
-              pretrained_model=None, max_iters=40000):
+              pretrained_model=None, max_iters=40000,
+              ctx_db_path=None):
     """Train a Fast R-CNN network."""
     sw = SolverWrapper(solver_prototxt, roidb, output_dir,
-                       pretrained_model=pretrained_model)
+                       pretrained_model=pretrained_model,
+                       ctx_db_path=ctx_db_path)
 
     print 'Solving...'
     sw.train_model(max_iters)
