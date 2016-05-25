@@ -13,6 +13,9 @@ sys.path.insert(0, osp.expanduser('~/research/fast-rcnn/lib'))
 from utils.blob import prep_im_for_blob
 from fast_rcnn.config import cfg
 
+sys.path.insert(0, osp.expanduser('~/research/dextro/dextro-tools/deep_context/python/utils'))
+import vis
+
 caffe.set_mode_gpu()
 caffe.set_device(0)
 
@@ -21,16 +24,15 @@ dataset = 'trainval'
 base_dir = osp.expanduser('~/research/VOCdevkit')
 jpeg_image_path = osp.join(base_dir, 'VOC%d/JPEGImages'%year, '%s.jpg')
 id_file = osp.join(base_dir, 'VOC%d/ImageSets/Main/%s.txt'%(year, dataset))
-net = caffe.Net('../../models/VGG16/cache_seg_fv_deploy.prototxt',
-    '../../output/default/voc_2007_trainval/context_vgg16_1.0_iter_80000.caffemodel',
+net = caffe.Net('../../models/VGG16/check_seg_fv.prototxt',
+    osp.expanduser('~/research/dextro/dextro-tools/deep_context/snapshots/seg/_iter_30000.caffemodel'),
     caffe.TEST)
+colors = np.load(osp.expanduser('~/research/dextro/dextro-tools/deep_context/data/seg_colors.npy'))
 
 with open(id_file, 'r') as f:
   ids = [l.rstrip('\r').rstrip('\n') for l in f]
-
-with h5py.File('../../data/cache/seg_fv_lmdbs/voc_%d_%s.h5' % (year, dataset), 'w') as f:
-  dt = h5py.special_dtype(vlen=np.dtype('float16'))
-  dset = f.create_dataset('data', shape=(len(ids),), dtype=dt, compression='gzip', compression_opts=9)
+with h5py.File('../../data/cache/seg_fv_lmdbs/voc_%d_%s.h5' % (year, dataset), 'r') as f:
+  fvdb = f['data']
   for i, im_id in enumerate(ids):
     print 'Image %d / %d' % (i, len(ids))
     start = time.time()
@@ -45,11 +47,20 @@ with h5py.File('../../data/cache/seg_fv_lmdbs/voc_%d_%s.h5' % (year, dataset), '
 
     net.blobs[net.inputs[0]].reshape(*(im_in.shape))
     net.blobs[net.inputs[0]].data[...] = im_in
+    Tracer()()
+    fv = np.asarray(fvdb[i][:-4], dtype=float)
+    shape = np.asarray(fvdb[i][-4:], dtype=int)
+    net.blobs[net.inputs[1]].reshape(*(shape))
+    net.blobs[net.inputs[1]].data[...] = fv.reshape(shape)
+
     out = net.forward()
-    out = out[net.outputs[0]]
+    probs = out[net.outputs[0]]
+    probs = np.squeeze(probs).transpose((1, 2, 0)) 
+    labels = np.argmax(probs, axis=2).astype(int)
 
-    dset[i] = np.hstack((out.flatten(), out.shape))
-
-    if i % 100 == 0:
-      f.flush()
-      print 'flushed'
+    im_l = vis.create_labelled_image(labels, colors)
+    im_l = cv2.resize(im_l, (im.shape[1], im.shape[0]))
+    cv2.imshow('segmentation', im/2 + im_l/2)
+    cv2.imshow('labels', im_l)
+    cv2.imshow('image', im) 
+    cv2.waitKey(-1)
