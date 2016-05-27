@@ -41,11 +41,10 @@ __C.TRAIN.SCALES = (600,)
 __C.TRAIN.MAX_SIZE = 1000
 
 # Images to use per minibatch
-# __C.TRAIN.IMS_PER_BATCH = 2
-__C.TRAIN.IMS_PER_BATCH = 1
+__C.TRAIN.IMS_PER_BATCH = 2
 
 # Minibatch size (number of regions of interest [ROIs])
-__C.TRAIN.BATCH_SIZE = 64
+__C.TRAIN.BATCH_SIZE = 64 * __C.TRAIN.IMS_PER_BATCH
 
 # Fraction of minibatch that is labeled foreground (i.e. class > 0)
 __C.TRAIN.FG_FRACTION = 0.25
@@ -69,7 +68,7 @@ __C.TRAIN.BBOX_REG = True
 __C.TRAIN.BBOX_THRESH = 0.5
 
 # Iterations between snapshots
-__C.TRAIN.SNAPSHOT_ITERS = 10000
+__C.TRAIN.SNAPSHOT_ITERS = 5
 
 # solver.prototxt specifies the snapshot path prefix, this adds an optional
 # infix to yield the path: <prefix>[_<infix>]_iters_XYZ.caffemodel
@@ -132,7 +131,7 @@ __C.ROOT_DIR = osp.abspath(osp.join(osp.dirname(__file__), '..', '..'))
 __C.EXP_DIR = 'default'
 
 # The factor by which bounding boxes are expanded to get context
-__C.EXPAND_RATIO = 2.0
+__C.EXPAND_RATIO = 1.0
 
 # Flag for using context
 __C.CONTEXT = 1

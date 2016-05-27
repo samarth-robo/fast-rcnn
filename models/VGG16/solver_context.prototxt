@@ -2,7 +2,7 @@ train_net: "models/VGG16/train_context.prototxt"
 base_lr: 0.001
 lr_policy: "step"
 gamma: 0.1
-stepsize: 60000
+stepsize: 30000
 display: 100
 average_loss: 100
 # iter_size: 1
@@ -12,5 +12,5 @@ weight_decay: 0.0005
 # function
 snapshot: 0
 # We still use the snapshot prefix, though
-snapshot_prefix: "context"
+snapshot_prefix: "context_batch_size_2"
 #debug_info: true
