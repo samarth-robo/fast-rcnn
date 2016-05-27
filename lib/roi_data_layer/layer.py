@@ -15,6 +15,7 @@ from fast_rcnn.config import cfg
 from roi_data_layer.minibatch import get_minibatch
 import numpy as np
 import yaml
+import h5py
 from multiprocessing import Process, Queue
 from IPython.core.debugger import Tracer
 
@@ -46,9 +47,10 @@ class RoIDataLayer(caffe.Layer):
         else:
             db_inds = self._get_next_minibatch_inds()
             minibatch_db = [self._roidb[i] for i in db_inds]
+            Tracer()()
             if cfg.CONTEXT:
-              return get_minibatch(minibatch_db, self._num_classes,
-                  self._ctx_db, db_inds) 
+              ctx_db = [self._ctx_db[i] for i in db_inds]
+              return get_minibatch(minibatch_db, self._num_classes, ctx_db) 
             else:
               return get_minibatch(minibatch_db, self._num_classes)
 
@@ -72,9 +74,14 @@ class RoIDataLayer(caffe.Layer):
 
     def set_ctx_db(self, ctx_db_path):
       '''Set the context feature db used by this layer during training'''
-      self._ctx_lmdb = lmdb.open(ctx_db_path, map_size=int(1e12))
-      self._ctx_db = self._ctx_lmdb.begin()
-      print 'Opened context features LMDB', ctx_db_path
+      self._ctx_f = h5py.File(ctx_db_path, 'r')
+      self._ctx_db = self._ctx_f['data']
+      print 'Opened context features DB', ctx_db_path
+      def cleanup():
+        print 'Closing context DB'
+        self._ctx_f.close()
+      import atexit
+      atexit.register(cleanup)
 
     def setup(self, bottom, top):
         """Setup the RoIDataLayer."""

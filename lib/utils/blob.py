@@ -28,6 +28,17 @@ def im_list_to_blob(ims):
     blob = blob.transpose(channel_swap)
     return blob
 
+def blob_list_to_blob(bs):
+    """Convert a list of blobs into a network input by padding zeros"""
+    max_shape = np.array([b.shape for b in bs]).max(axis=0)
+    num_blobs = len(bs)
+    blob = np.zeros((num_blobs, max_shape[0], max_shape[1], max_shape[2]),
+                    dtype=np.float32)
+    for i in xrange(num_blobs):
+        b = bs[i]
+        blob[i, 0:b.shape[0], 0:b.shape[1], :] = b
+    return blob
+
 def prep_im_for_blob(im, pixel_means, target_size, max_size):
     """Mean subtract and scale an image for use in a blob."""
     im = im.astype(np.float32, copy=False)

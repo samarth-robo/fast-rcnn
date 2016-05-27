@@ -15,7 +15,7 @@ from utils.blob import prep_im_for_blob, im_list_to_blob
 import caffe
 datum = caffe.proto.caffe_pb2.Datum()
 
-def get_minibatch(roidb, num_classes, ctx_db=None, db_inds=None):
+def get_minibatch(roidb, num_classes, ctx_db=None):
     """Given a roidb, construct a minibatch sampled from it."""
     num_images = len(roidb)
     # Sample random scales to use for each image in this batch
@@ -63,7 +63,7 @@ def get_minibatch(roidb, num_classes, ctx_db=None, db_inds=None):
 
     if cfg.CONTEXT:
       # Add to context features blob
-      ctx_blob = _get_ctx_blob(ctx_db, db_inds)
+      ctx_blob = _get_ctx_blob(ctx_db)
 
     # For debug visualizations
     # _vis_minibatch(im_blob, rois_blob, labels_blob, all_overlaps)
@@ -131,20 +131,15 @@ def _sample_rois(roidb, fg_rois_per_image, rois_per_image, num_classes):
 
     return labels, overlaps, rois, bbox_targets, bbox_loss_weights, exp_rois
 
-def _get_ctx_blob(ctx_db, db_inds):
-  ctx_blob = None
-  for ind in db_inds:
-    key = '{:0>10d}'.format(ind)
-    val = ctx_db.get(key)
-    if val is None:
-      print 'Cannot read key %s in LMDB %s' % (key, ctx_db)
-      return None
-    datum.ParseFromString(val)
-    ctx_fv = caffe.io.datum_to_array(datum)
-    ctx_blob = np.concatenate((ctx_blob, ctx_fv),
-        axis=0) if ctx_blob is not None else ctx_fv[np.newaxis, :, :, :]
+def _get_ctx_blob(ctx_db):
+  num_blobs = len(ctx_db)
+  blob_list = []
+  for i in xrange(num_blobs):
+    fv = np.asarray(ctx_db[i][:-4])
+    shape = np.array(ctx_db[i][-3:], dtype=int)
+    blob_list.append(fv.reshape(*shape))
 
-  return ctx_blob
+  return blob_list_to_blob(blob_list)
 
 def _get_image_blob(roidb, scale_inds):
     """Builds an input blob from the images in the roidb at the specified

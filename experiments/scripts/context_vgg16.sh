@@ -6,7 +6,7 @@ set -e
 export PYTHONUNBUFFERED="True"
 
 # LOG="experiments/logs/context_vgg16.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
-LOG="experiments/logs/context_2.0_vgg16.txt"
+# LOG="experiments/logs/context_2.0_vgg16.txt"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
