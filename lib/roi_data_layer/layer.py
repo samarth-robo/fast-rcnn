@@ -46,11 +46,7 @@ class RoIDataLayer(caffe.Layer):
         else:
             db_inds = self._get_next_minibatch_inds()
             minibatch_db = [self._roidb[i] for i in db_inds]
-            if cfg.CONTEXT:
-              return get_minibatch(minibatch_db, self._num_classes,
-                  self._ctx_db, db_inds) 
-            else:
-              return get_minibatch(minibatch_db, self._num_classes)
+            return get_minibatch(minibatch_db, self._num_classes)
 
     def set_roidb(self, roidb):
         """Set the roidb to be used by this layer during training."""
@@ -70,12 +66,6 @@ class RoIDataLayer(caffe.Layer):
             import atexit
             atexit.register(cleanup)
 
-    def set_ctx_db(self, ctx_db_path):
-      '''Set the context feature db used by this layer during training'''
-      self._ctx_lmdb = lmdb.open(ctx_db_path, map_size=int(1e12))
-      self._ctx_db = self._ctx_lmdb.begin()
-      print 'Opened context features LMDB', ctx_db_path
-
     def setup(self, bottom, top):
         """Setup the RoIDataLayer."""
 
@@ -91,10 +81,8 @@ class RoIDataLayer(caffe.Layer):
         if cfg.CONTEXT:
           if cfg.TRAIN.BBOX_REG:
             self._name_to_top_map['exp_rois'] = 5
-            self._name_to_top_map['ctx'] = 6
           else:
             self._name_to_top_map['exp_rois'] = 3
-            self._name_to_top_map['ctx'] = 4
 
         # data blob: holds a batch of N images, each with 3 channels
         # The height and width (100 x 100) are dummy values

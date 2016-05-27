@@ -12,10 +12,8 @@ import numpy.random as npr
 import cv2
 from fast_rcnn.config import cfg
 from utils.blob import prep_im_for_blob, im_list_to_blob
-import caffe
-datum = caffe.proto.caffe_pb2.Datum()
 
-def get_minibatch(roidb, num_classes, ctx_db=None, db_inds=None):
+def get_minibatch(roidb, num_classes):
     """Given a roidb, construct a minibatch sampled from it."""
     num_images = len(roidb)
     # Sample random scales to use for each image in this batch
@@ -48,22 +46,17 @@ def get_minibatch(roidb, num_classes, ctx_db=None, db_inds=None):
         rois_blob_this_image = np.hstack((batch_ind, rois))
         rois_blob = np.vstack((rois_blob, rois_blob_this_image))
 
-        if cfg.CONTEXT:
-          # Add to expanded RoIs blob
-          exp_rois = _project_im_rois(exp_im_rois, im_scales[im_i])
-          batch_ind = im_i * np.ones((exp_rois.shape[0], 1))
-          exp_rois_blob_this_image = np.hstack((batch_ind, exp_rois))
-          exp_rois_blob = np.vstack((exp_rois_blob, exp_rois_blob_this_image))
+        # Add to expanded RoIs blob
+        exp_rois = _project_im_rois(exp_im_rois, im_scales[im_i])
+        batch_ind = im_i * np.ones((exp_rois.shape[0], 1))
+        exp_rois_blob_this_image = np.hstack((batch_ind, exp_rois))
+        exp_rois_blob = np.vstack((exp_rois_blob, exp_rois_blob_this_image))
 
         # Add to labels, bbox targets, and bbox loss blobs
         labels_blob = np.hstack((labels_blob, labels))
         bbox_targets_blob = np.vstack((bbox_targets_blob, bbox_targets))
         bbox_loss_blob = np.vstack((bbox_loss_blob, bbox_loss))
         # all_overlaps = np.hstack((all_overlaps, overlaps))
-
-    if cfg.CONTEXT:
-      # Add to context features blob
-      ctx_blob = _get_ctx_blob(ctx_db, db_inds)
 
     # For debug visualizations
     # _vis_minibatch(im_blob, rois_blob, labels_blob, all_overlaps)
@@ -78,7 +71,6 @@ def get_minibatch(roidb, num_classes, ctx_db=None, db_inds=None):
 
     if cfg.CONTEXT:
         blobs['exp_rois'] = exp_rois_blob
-        blobs['ctx'] = ctx_blob
 
     return blobs
 
@@ -130,21 +122,6 @@ def _sample_rois(roidb, fg_rois_per_image, rois_per_image, num_classes):
                                         num_classes)
 
     return labels, overlaps, rois, bbox_targets, bbox_loss_weights, exp_rois
-
-def _get_ctx_blob(ctx_db, db_inds):
-  ctx_blob = None
-  for ind in db_inds:
-    key = '{:0>10d}'.format(ind)
-    val = ctx_db.get(key)
-    if val is None:
-      print 'Cannot read key %s in LMDB %s' % (key, ctx_db)
-      return None
-    datum.ParseFromString(val)
-    ctx_fv = caffe.io.datum_to_array(datum)
-    ctx_blob = np.concatenate((ctx_blob, ctx_fv),
-        axis=0) if ctx_blob is not None else ctx_fv[np.newaxis, :, :, :]
-
-  return ctx_blob
 
 def _get_image_blob(roidb, scale_inds):
     """Builds an input blob from the images in the roidb at the specified

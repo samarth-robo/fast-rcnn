@@ -87,9 +87,6 @@ if __name__ == '__main__':
     output_dir = get_output_dir(imdb, None)
     print 'Output will be saved to `{:s}`'.format(output_dir)
 
-    ctx_lmdb_path = 'data/cache/%s_ctx_fv' % args.imdb_name
-
     train_net(args.solver, roidb, output_dir,
               pretrained_model=args.pretrained_model,
-              max_iters=args.max_iters,
-              ctx_lmdb_path=ctx_lmdb_path)
+              max_iters=args.max_iters)
