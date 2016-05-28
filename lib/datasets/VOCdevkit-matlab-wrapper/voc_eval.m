@@ -13,7 +13,7 @@ fprintf('\n~~~~~~~~~~~~~~~~~~~~\n');
 fprintf('Results:\n');
 aps = [res(:).ap]';
 fprintf('%.1f\n', aps * 100);
-fprintf('%.1f\n', mean(aps) * 100);
+fprintf('mAP = %.1f\n', mean(aps) * 100);
 fprintf('~~~~~~~~~~~~~~~~~~~~\n');
 fprintf('Saving %s\n', [output_dir '/pr.mat']);
 save([output_dir '/pr.mat'], 'res');
