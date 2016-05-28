@@ -641,15 +641,15 @@ layer {
   top: "fc7_seg"
 }
 
-layer {
-  name: "drop7_seg"
-  type: "Dropout"
-  bottom: "fc7_seg"
-  top: "fc7_seg"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
+# layer {
+#   name: "drop7_seg"
+#   type: "Dropout"
+#   bottom: "fc7_seg"
+#   top: "fc7_seg"
+#   dropout_param {
+#     dropout_ratio: 0.5
+#   }
+# }
 
 ################################## seg project
 layer {
