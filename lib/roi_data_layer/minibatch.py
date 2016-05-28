@@ -13,6 +13,8 @@ import cv2
 from fast_rcnn.config import cfg
 from utils.blob import prep_im_for_blob, im_list_to_blob
 from IPython.core.debugger import Tracer
+if cfg.CONTEXT:
+  from utils.context import get_context_blob
 
 def get_minibatch(roidb, num_classes):
     """Given a roidb, construct a minibatch sampled from it."""
@@ -67,16 +69,20 @@ def get_minibatch(roidb, num_classes):
     # For debug visualizations
     # _vis_minibatch(im_blob, rois_blob, labels_blob, all_overlaps)
 
+    if cfg.CONTEXT:
+      ctx_blob = get_context_blob(im_blob)
+
     blobs = {'data': im_blob,
              'rois': rois_blob,
              'labels': labels_blob}
 
     if cfg.TRAIN.BBOX_REG:
-        blobs['bbox_targets'] = bbox_targets_blob
+        blobs['bbox_targets']      = bbox_targets_blob
         blobs['bbox_loss_weights'] = bbox_loss_blob
     
     if cfg.CONTEXT:
       blobs['exp_rois'] = exp_rois_blob
+      blobs['fc7_seg']  = ctx_blob
 
     return blobs
 

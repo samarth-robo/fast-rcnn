@@ -81,8 +81,10 @@ class RoIDataLayer(caffe.Layer):
         if cfg.CONTEXT:
           if cfg.TRAIN.BBOX_REG:
             self._name_to_top_map['exp_rois'] = 5
+            self._name_to_top_map['fc7_seg'] = 6
           else:
             self._name_to_top_map['exp_rois'] = 3
+            self._name_to_top_map['fc7_seg'] = 4
 
         # data blob: holds a batch of N images, each with 3 channels
         # The height and width (100 x 100) are dummy values
@@ -102,6 +104,7 @@ class RoIDataLayer(caffe.Layer):
           # (n, x1, y1, x2, y2) specifying an image batch index n and a
           # rectangle (x1, y1, x2, y2)
           top[self._name_to_top_map['exp_rois']].reshape(1, 5)
+          top[self._name_to_top_map['fc7_seg']].reshape(1, 512, 10, 10)
 
         if cfg.TRAIN.BBOX_REG:
             self._name_to_top_map['bbox_targets'] = 3
@@ -118,6 +121,7 @@ class RoIDataLayer(caffe.Layer):
     def forward(self, bottom, top):
         """Get blobs and copy them into this layer's top blob vector."""
         blobs = self._get_next_minibatch()
+        caffe.set_device(0)
 
         for blob_name, blob in blobs.iteritems():
             top_ind = self._name_to_top_map[blob_name]
