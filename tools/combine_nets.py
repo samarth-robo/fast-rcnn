@@ -8,7 +8,7 @@ from IPython.core.debugger import Tracer
 
 def combine_nets(src_net, dst_net, src_layer_names, dst_layer_names):
   assert(len(src_layer_names) == len(dst_layer_names))
-  for src_layer, dst_layer in zip(src_names, dst_names):
+  for src_layer, dst_layer in zip(src_layer_names, dst_layer_names):
     for i in xrange(len(src_net.params[src_layer])):
       dst_net.params[dst_layer][i].data[...] = src_net.params[src_layer][i].data
     print 'Transferred', src_layer, '->', dst_layer
