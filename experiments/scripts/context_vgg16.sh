@@ -16,8 +16,8 @@ time ./tools/train_net.py --gpu 0 \
   --imdb voc_2007_trainval \
   --iters 40000
 
-time ./tools/test_net.py --gpu 0 \
-  --def models/VGG16/test_context.prototxt \
-  --net output/default/voc_2007_trainval/context_batch_size_2_vgg16_1.0_iter_40000.caffemodel \
-  --imdb voc_2007_test \
-  --comp
+# time ./tools/test_net.py --gpu 0 \
+#   --def models/VGG16/test_context.prototxt \
+#   --net output/default/voc_2007_trainval/context_batch_size_2_vgg16_1.0_iter_40000.caffemodel \
+#   --imdb voc_2007_test \
+#   --comp

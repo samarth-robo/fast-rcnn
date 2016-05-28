@@ -505,7 +505,7 @@ layer {
   param {lr_mult: 1 decay_mult: 1}
   param {lr_mult: 2 decay_mult: 0}
   convolution_param {
-    num_output: 30
+    num_output: 60
     kernel_size: 1
     weight_filler {
       type: "gaussian"
